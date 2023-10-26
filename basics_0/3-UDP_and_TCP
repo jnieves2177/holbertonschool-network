@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# This is the answer file for the UDP and TCP task.
+echo 1
+echo 2
+echo 2
