@@ -1,17 +1,41 @@
-#!/bin/bash
-# Get a list of listening sockets and their associated PIDs
-listening_sockets=$(netstat -tuln | grep LISTEN)
+#!/usr/bin/env bash
+#This bash script displays listening ports and their associated programs.
+echo "Active Internet connections (only servers)"
+echo "Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name"
+netstat -tuln | awk '
+    NR > 2 {
+        split($4, local, ":")
+        if ($6 == "LISTEN") {
+            cmd = "lsof -i : " local[2] " -n -P -t"
+            cmd | getline pid
+            close(cmd)
+            if (pid > 0) {
+                cmd = "ps -p " pid " -o comm="
+                cmd | getline program
+                close(cmd)
+            } else {
+                program = "-"
+            }
+            printf "%-4s %-7s %-7s %-23s %-23s %-12s %s/%s\n", $1, $2, $3, $4, $5, $6, pid, program
+        }
+    }'
 
-# Print the headers for the output
-echo "Protocol  Port  PID   Program"
-
-# Loop through the listening sockets
-while read -r line; do
-    protocol=$(echo "$line" | awk '{print $1}')
-    port=$(echo "$line" | awk '{print $4}' | awk -F: '{print $NF}')
-    pid=$(echo "$line" | awk '{print $7}' | awk -F/ '{print $1}')
-    program=$(ps -p "$pid" -o comm=)
-
-    # Print the information
-    echo "$protocol   $port   $pid   $program"
-done <<< "$listening_sockets"
+echo "Active UNIX domain sockets (only servers)"
+echo "Proto RefCnt Flags       Type       State         I-Node   PID/Program name    Path"
+netstat -x | awk '
+    NR > 1 {
+        if ($1 == "unix" && $4 == "LISTENING") {
+            cmd = "lsof " $8 " -n -P -t"
+            cmd | getline pid
+            close(cmd)
+            if (pid > 0) {
+                cmd = "ps -p " pid " -o comm="
+                cmd | getline program
+                close(cmd)
+            } else {
+                program = "-"
+            }
+            printf "%-4s %-6s %-11s %-10s %-13s %-7s %-17s %s\n", $1, $2, $3, $4, $5, $6, pid, program, $8
+        }
+    }'
+echo
