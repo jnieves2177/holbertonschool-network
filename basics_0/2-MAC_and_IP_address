@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#This is the answer file for the 2 MAC and IP adress task.
+echo 2
+echo 1, 3
