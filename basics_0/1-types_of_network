@@ -1,6 +1,4 @@
-#!/usr/bin/env bash
-# This is the answer file for the 1 types of network task.
-echo 3
-echo 2
-echo 1
-echo
+3
+2
+1
+
