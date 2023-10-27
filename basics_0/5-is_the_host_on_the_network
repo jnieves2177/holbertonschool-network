@@ -1,13 +1,8 @@
 #!/usr/bin/env bash
-# Checks if an argument is provided
-if [ $# -eq 0 ]; then
-    echo "Usage: $0 {IP_ADDRESS}"
-    exit 1
-fi
-
-# Get the IP address from the command line argument
-ip_address="$1"
-
-# Ping the IP address 5 times
-ping -c 5 "$ip_address"
-echo
+# This is a Bash script that pings an IP address specified as a command-line argument
+ if [ "$#" -eq 1 ]
+    then
+        ping -c 5 "$1"
+    else
+        echo "Usage: 5-is_the_host_on_the_network {IP_ADDRESS}"
+    fi
